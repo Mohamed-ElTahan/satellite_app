@@ -7,6 +7,8 @@ class SatelliteTheme {
   static const Color panelBorder = Color(0x5500E5FF);
   
   static const Color earthLines = Color(0xAA00E5FF);
+  static const Color earthWater = Color(0xFF001220); // Deep Space Navy
+  static const Color earthLand = Color(0xFF1B5E20);  // Natural Forest Green
   
   static const Color satelliteColor = Color(0xFFFFB300);
   static const Color orbitLine = Color(0x66FFB300);
