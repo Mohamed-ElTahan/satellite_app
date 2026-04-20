@@ -10,79 +10,40 @@ class DataPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (state.rangeKm <= 0.0) {
-      return const SizedBox.shrink();
-    }
-
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(12),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: Container(
-          width: MediaQuery.sizeOf(context).width * 0.25,
-          height: MediaQuery.sizeOf(context).height * 0.25,
-          constraints: const BoxConstraints(minWidth: 250, minHeight: 200),
-          padding: const EdgeInsets.all(20),
+          width: MediaQuery.sizeOf(context).width * 0.95,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: SatelliteTheme.panelGlass,
             border: Border.all(color: SatelliteTheme.panelBorder),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              )
-            ]
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text('TELEMETRY DATA', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                decoration: BoxDecoration(
-                  color: state.signalAcquired ? Colors.greenAccent.withValues(alpha: 0.2) : Colors.redAccent.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: state.signalAcquired ? Colors.greenAccent : Colors.redAccent),
-                ),
-                child: Center(
-                  child: Text(
-                    state.signalAcquired ? 'SIGNAL ACQUIRED' : 'LOS OBSTRUCTED',
-                    style: TextStyle(
-                      color: state.signalAcquired ? Colors.greenAccent : Colors.redAccent,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
+              _buildMetric(
+                context,
+                'AZIMUTH',
+                '${state.output.azimuth.toStringAsFixed(2)}°',
               ),
-              const SizedBox(height: 16),
-              _buildDataRow(context, 'SAT LAT', '${state.inputs.satelliteLat.toStringAsFixed(2)}°'),
-              const SizedBox(height: 8),
-              _buildDataRow(context, 'SAT LNG', '${state.inputs.satelliteLng.toStringAsFixed(2)}°'),
-              const SizedBox(height: 8),
-              _buildDataRow(context, 'ALTITUDE', '${state.inputs.satelliteAltitudeKm.toStringAsFixed(0)} km'),
-              const SizedBox(height: 8),
-              _buildDataRow(context, 'SPEED', '${(state.inputs.satelliteSpeed * 3600.0).toStringAsFixed(2)} °/hr'),
-              const SizedBox(height: 8),
-              _buildDataRow(context, 'AZIMUTH (TRUE)', '${state.azimuth.toStringAsFixed(2)}°'),
-              const SizedBox(height: 8),
-              _buildDataRow(context, 'ELEVATION', '${state.elevation.toStringAsFixed(2)}°', 
-                  color: state.elevation >= 0 ? SatelliteTheme.observerColor : Colors.redAccent),
-              const SizedBox(height: 8),
-                      _buildDataRow(context, 'RANGE', '${state.rangeKm.toStringAsFixed(0)} km'),
-                    ],
-                  ),
-                ),
+              _buildVerticalDivider(),
+              _buildMetric(
+                context,
+                'ELEVATION',
+                '${state.output.elevation.toStringAsFixed(2)}°',
+                color: state.output.elevation >= 0
+                    ? Colors.greenAccent
+                    : Colors.redAccent,
+              ),
+              _buildVerticalDivider(),
+              _buildMetric(
+                context,
+                'RANGE',
+                '${state.output.rangeKm.toStringAsFixed(0)} km',
               ),
             ],
           ),
@@ -91,20 +52,38 @@ class DataPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildDataRow(BuildContext context, String label, String value, {Color? color}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildMetric(
+    BuildContext context,
+    String label,
+    String value, {
+    Color? color,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white60)),
         Text(
-          value, 
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: color ?? Colors.white,
+          label,
+          style: const TextStyle(
+            fontSize: 9,
+            color: Colors.white54,
             fontWeight: FontWeight.bold,
-            fontSize: 18,
-          )
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            color: color ?? Colors.white,
+            fontSize: 16,
+            fontFamily: 'RobotoMono',
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
+  }
+
+  Widget _buildVerticalDivider() {
+    return Container(height: 24, width: 1, color: Colors.white10);
   }
 }
